@@ -1,3 +1,7 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  # Sets the root URL to task list screen
+  root 'tasks#index'
+  
+  # Automatically generates all the necessary paths (CRUD Views)
+  resources :tasks
 end
