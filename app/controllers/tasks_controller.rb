@@ -18,19 +18,19 @@ class TasksController < ApplicationController
   def create
     @task = Task.new(task_params)
     if @task.save
-      # CHANGED THIS LINE: Redirects to the index page instead of the show page
       redirect_to tasks_path, notice: 'Task was successfully created.'
     else
-      render :new
+      
+      render :new, status: :unprocessable_entity
     end
   end
 
   def update
     if @task.update(task_params)
-      # The tests confirmed this one should still go to the show page, so we leave it as @task
       redirect_to @task, notice: 'Task was successfully updated.'
     else
-      render :edit
+      # ADDED THE STATUS CODE HERE:
+      render :edit, status: :unprocessable_entity
     end
   end
 
