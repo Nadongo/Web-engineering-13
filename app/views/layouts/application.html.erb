@@ -10,10 +10,12 @@ Nadongo    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'relo
   </head>
 
   <body>
-    <nav>
-      <%= link_to 'Tasks Index', tasks_path, id: 'tasks-index' %> | 
-      <%= link_to 'New Task', new_task_path, id: 'new-task' %>
-    </nav>
+    <header style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #ccc;">
+      <nav>
+        <%= link_to t('common.nav.tasks_index'), tasks_path, id: 'tasks-index' %> |
+        <%= link_to t('common.nav.new_task'), new_task_path, id: 'new-task' %>
+      </nav>
+    </header>
 
     <% flash.each do |key, message| %>
       <div class="flash <%= key %>"><%= message %></div>

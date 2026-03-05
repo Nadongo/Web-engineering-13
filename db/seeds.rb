@@ -5,3 +5,9 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+50.times do |n|
+  Task.create!(
+    title: "Test Task #{n + 1}",
+    content: "This is the dummy content for task number #{n + 1}."
+  )
+end
