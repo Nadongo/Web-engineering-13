@@ -2,8 +2,37 @@ class TasksController < ApplicationController
   before_action :set_task, only: [:show, :edit, :update, :destroy]
 
   def index
-    # Fetches tasks in descending order, paginated, 10 per page
-    @tasks = Task.order(created_at: :desc).page(params[:page]).per(10)
+    # Start with all tasks
+    @tasks = Task.all
+
+    # 1. Search Logic
+    if params[:search].present?
+      if params[:search][:title].present? && params[:search][:status].present?
+        # Search by BOTH title and status
+        @tasks = @tasks.search_title(params[:search][:title]).search_status(params[:search][:status])
+      elsif params[:search][:title].present?
+        # Search ONLY by title
+        @tasks = @tasks.search_title(params[:search][:title])
+      elsif params[:search][:status].present?
+        # Search ONLY by status
+        @tasks = @tasks.search_status(params[:search][:status])
+      end
+    end
+
+    # 2. Sorting Logic
+    if params[:sort_deadline_on]
+      # Apply deadline sorting if the link was clicked
+      @tasks = @tasks.sort_deadline_on
+    elsif params[:sort_priority]
+      # Apply priority sorting if the link was clicked
+      @tasks = @tasks.sort_priority
+    else
+      # Default: Sort by newest created (from Step 2)
+      @tasks = @tasks.sort_created_at
+    end
+
+    # 3. Pagination (This must happen last!)
+    @tasks = @tasks.page(params[:page]).per(10)
   end
 
   def show
@@ -46,6 +75,6 @@ class TasksController < ApplicationController
   end
 
   def task_params
-    params.require(:task).permit(:title, :content)
+    params.require(:task).permit(:title, :content, :deadline_on, :priority, :status)
   end
 end
