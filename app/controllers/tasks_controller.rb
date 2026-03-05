@@ -7,17 +7,14 @@ class TasksController < ApplicationController
 
     # 1. Search Logic
     if params[:search].present?
-      if params[:search][:title].present? && params[:search][:status].present?
-        # Search by BOTH title and status
-        @tasks = @tasks.search_title(params[:search][:title]).search_status(params[:search][:status])
-      elsif params[:search][:title].present?
-        # Search ONLY by title
+      if params[:search][:title].present?
         @tasks = @tasks.search_title(params[:search][:title])
-      elsif params[:search][:status].present?
-        # Search ONLY by status
+      end
+      
+      if params[:search][:status].present?
         @tasks = @tasks.search_status(params[:search][:status])
       end
-    end
+    endd
 
     # 2. Sorting Logic
     if params[:sort_deadline_on]
