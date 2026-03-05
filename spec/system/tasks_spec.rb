@@ -102,13 +102,26 @@ RSpec.describe 'Task management function', type: :system do
 
       context 'Search by status' do
         it "Only tasks matching the searched status will be displayed" do
-          # Selects the visible Japanese text from the dropdown menu
+          # 1. Test "Not started"
           select '未着手', from: 'ステータス'
           click_button '検索'
-          
           expect(page).to have_content 'first_task'
           expect(page).not_to have_content 'second_task'
           expect(page).not_to have_content 'third_task'
+
+          # 2. Test "In progress"
+          select '着手中', from: 'ステータス'
+          click_button '検索'
+          expect(page).not_to have_content 'first_task'
+          expect(page).to have_content 'second_task'
+          expect(page).not_to have_content 'third_task'
+
+          # 3. Test "Completed"
+          select '完了', from: 'ステータス'
+          click_button '検索'
+          expect(page).not_to have_content 'first_task'
+          expect(page).not_to have_content 'second_task'
+          expect(page).to have_content 'third_task'
         end
       end
 
