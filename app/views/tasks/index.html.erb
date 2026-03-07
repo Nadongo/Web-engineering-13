@@ -6,17 +6,34 @@
   }
   
   .task-table th, .task-table td {
-    padding: 12px 15px; /* Adds space inside the cells */
+    padding: 12px 15px;
     text-align: left;
-    border-bottom: 1px solid #ddd; /* Adds a light line between rows */
+    border-bottom: 1px solid #ddd;
   }
   
   .task-table th {
-    background-color: #f4f4f4; /* Gives the header a light gray background */
+    background-color: #f4f4f4;
+  }
+  
+  .search-form {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
   }
 </style>
 
 <h1><%= t('tasks.index.title') %></h1>
+
+<%= form_with(scope: :search, url: tasks_path, method: :get, local: true, class: 'search-form') do |form| %>
+  <%= form.label :title, Task.human_attribute_name(:title) %>
+  <%= form.text_field :title, value: params.dig(:search, :title) %>
+
+  <%= form.label :status, Task.human_attribute_name(:status) %>
+  <%= form.select :status, Task.statuses.keys.map { |k| [t("activerecord.enums.task.status.#{k}"), k] }, { include_blank: true, selected: params.dig(:search, :status) } %>
+
+  <%= form.submit "検索", id: 'search_task' %>
+<% end %>
 
 <table class="task-table">
   <thead>
@@ -24,6 +41,11 @@
       <th><%= Task.human_attribute_name(:title) %></th>
       <th><%= Task.human_attribute_name(:content) %></th>
       <th><%= Task.human_attribute_name(:created_at) %></th>
+      
+      <th><%= link_to Task.human_attribute_name(:deadline_on), sort_deadline_on: true %></th>
+      <th><%= link_to Task.human_attribute_name(:priority), sort_priority: true %></th>
+      
+      <th><%= Task.human_attribute_name(:status) %></th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -34,6 +56,10 @@
         <td><%= task.title %></td>
         <td><%= task.content %></td>
         <td><%= task.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+        
+        <td><%= task.deadline_on %></td>
+        <td><%= t("activerecord.enums.task.priority.#{task.priority}") %></td>
+        <td><%= t("activerecord.enums.task.status.#{task.status}") %></td>
         
         <td>
           <%= link_to t('tasks.index.show'), task, class: 'show-task', style: 'margin-right: 10px;' %>
