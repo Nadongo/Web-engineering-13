@@ -1,14 +1,8 @@
 <h1>ユーザ詳細ページ</h1>
 
-<p>
-  <strong>名前:</strong> <%= @user.name %>
-</p>
-<p>
-  <strong>メールアドレス:</strong> <%= @user.email %>
-</p>
-<p>
-  <strong>管理者権限:</strong> <%= @user.admin? ? 'あり' : 'なし' %>
-</p>
+<p><strong>名前:</strong> <%= @user.name %></p>
+<p><strong>メールアドレス:</strong> <%= @user.email %></p>
+<p><strong>管理者権限:</strong> <%= @user.admin? ? 'あり' : 'なし' %></p>
 
 <h2>タスク一覧</h2>
 <table>

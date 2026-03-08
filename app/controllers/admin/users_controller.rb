@@ -35,10 +35,10 @@ class Admin::UsersController < ApplicationController
 
   def destroy
     if @user.destroy
-      redirect_to admin_users_path, notice: 'ユーザを削除しました' # Changed text
+      redirect_to admin_users_path, notice: 'ユーザを削除しました'
     else
-      # ADDED: Bot requirement for deleting the last admin
-      redirect_to admin_users_path, alert: '管理者が0人になるため削除できません' 
+      # Fixes Req 20: Displays the correct message when deletion is blocked
+      redirect_to admin_users_path, alert: '管理者が0人になるため削除できません'
     end
   end
 
