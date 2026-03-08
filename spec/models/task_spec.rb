@@ -2,10 +2,13 @@ require 'rails_helper'
 
 RSpec.describe 'Task model function', type: :model do
   describe 'Search function' do
-    # Creating the 3 specific test tasks the assignment requested
-    let!(:first_task) { FactoryBot.create(:task, title: 'first_task', deadline_on: '2022-02-18', priority: 'medium', status: 'not_started') }
-    let!(:second_task) { FactoryBot.create(:task, title: 'second_task', deadline_on: '2022-02-17', priority: 'high', status: 'in_progress') }
-    let!(:third_task) { FactoryBot.create(:task, title: 'third_task', deadline_on: '2022-02-16', priority: 'low', status: 'completed') }
+    # 1. Create a user first!
+    let!(:user) { FactoryBot.create(:user) }
+    
+    # 2. Create the 3 specific test tasks the assignment requested AND attach the user!
+    let!(:first_task) { FactoryBot.create(:task, title: 'first_task', deadline_on: '2022-02-18', priority: 'medium', status: 'not_started', user: user) }
+    let!(:second_task) { FactoryBot.create(:task, title: 'second_task', deadline_on: '2022-02-17', priority: 'high', status: 'in_progress', user: user) }
+    let!(:third_task) { FactoryBot.create(:task, title: 'third_task', deadline_on: '2022-02-16', priority: 'low', status: 'completed', user: user) }
 
     context 'Title is performed by scope method' do
       it "Tasks containing search words are narrowed down." do

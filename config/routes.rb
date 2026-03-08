@@ -1,7 +1,16 @@
 Rails.application.routes.draw do
-  # Sets the root URL to task list screen
   root 'tasks#index'
   
-  # Automatically generates all the necessary paths (CRUD Views)
   resources :tasks
+  resources :users, only: [:new, :create, :show, :edit, :update]
+  
+  # Login / Logout routes
+  resources :sessions, only: [:new, :create, :destroy]
+  
+  # ADD THIS LINE: Failsafe to catch the GET request and log the user out
+  get '/sessions/:id', to: 'sessions#destroy'
+  
+  namespace :admin do
+    resources :users
+  end
 end

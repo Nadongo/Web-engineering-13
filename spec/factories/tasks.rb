@@ -1,12 +1,12 @@
 FactoryBot.define do
-
   factory :task do
-    title { 'Document preparation' }
-    content { 'Create a proposal.' }
-  end
-
-  factory :second_task, class: Task do
-    title { 'send e-mail' }
-    content { 'Send a sales email to a customer.' }
+    title { 'test_title' }
+    content { 'test_content' }
+    deadline_on { '2026-12-31' }
+    priority { 'medium' }
+    status { 'not_started' }
+    
+    # Associates the task with a user automatically
+    association :user 
   end
 end
