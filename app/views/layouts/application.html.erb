@@ -3,8 +3,8 @@
       <% if logged_in? %> 
         
         <% if current_user.admin? %>
-          <%= link_to 'ユーザー一覧', admin_users_path, id: 'users-index' %> |
-          <%= link_to 'ユーザーを登録する', new_admin_user_path, id: 'add-user' %> |
+          <%= link_to 'ユーザ一覧', admin_users_path, id: 'users-index' %> |
+          <%= link_to 'ユーザを登録する', new_admin_user_path, id: 'add-user' %> |
         <% end %>
 
         <%= link_to 'タスク一覧', tasks_path, id: 'tasks-index' %> |

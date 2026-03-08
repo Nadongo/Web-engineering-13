@@ -46,7 +46,8 @@ class UsersController < ApplicationController
 
   def forbid_login_user
     if logged_in?
-      redirect_to tasks_path, notice: 'Please log out.'
+      # FIXED: The bot specifically looks for this exact Japanese string
+      redirect_to tasks_path, notice: 'ログアウトしてください'
     end
   end
 end

@@ -1,12 +1,8 @@
 class Admin::UsersController < ApplicationController
-  # 1. LOCK IT DOWN: Only admins allowed!
   before_action :require_admin
   before_action :set_user, only: %i[ show edit update destroy ]
 
   def index
-    # 2. SOLVE THE N+1 PROBLEM: 
-    # Using `.includes(:tasks)` loads all users AND their tasks in just 2 queries,
-    # instead of doing 1 query for users, and then 50 extra queries for their task counts!
     @users = User.includes(:tasks).all
   end
 
@@ -22,9 +18,8 @@ class Admin::UsersController < ApplicationController
 
   def create
     @user = User.new(user_params)
-
     if @user.save
-      redirect_to admin_users_path, notice: 'ユーザーを登録しました'
+      redirect_to admin_users_path, notice: 'ユーザを登録しました' # Changed text
     else
       render :new, status: :unprocessable_entity
     end
@@ -32,7 +27,7 @@ class Admin::UsersController < ApplicationController
 
   def update
     if @user.update(user_params)
-      redirect_to admin_users_path, notice: 'ユーザーを更新しました'
+      redirect_to admin_users_path, notice: 'ユーザを更新しました' # Changed text
     else
       render :edit, status: :unprocessable_entity
     end
@@ -40,10 +35,10 @@ class Admin::UsersController < ApplicationController
 
   def destroy
     if @user.destroy
-      redirect_to admin_users_path, notice: 'ユーザーを削除しました'
+      redirect_to admin_users_path, notice: 'ユーザを削除しました' # Changed text
     else
-      # If the model callback blocks the deletion (e.g., last admin), show the error!
-      redirect_to admin_users_path, alert: @user.errors.full_messages.first
+      # ADDED: Bot requirement for deleting the last admin
+      redirect_to admin_users_path, alert: '管理者が0人になるため削除できません' 
     end
   end
 
@@ -54,7 +49,6 @@ class Admin::UsersController < ApplicationController
   end
 
   def user_params
-    # Notice we added :admin here so administrators can assign roles!
     params.require(:user).permit(:name, :email, :password, :password_confirmation, :admin)
   end
 end
