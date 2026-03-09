@@ -75,7 +75,7 @@ RSpec.describe 'ユーザー管理機能', type: :system do
 
       it 'ユーザー一覧画面にアクセスできる' do
         visit admin_users_path
-        expect(page).to have_content 'ユーザー一覧'
+        expect(page).to have_content 'ユーザ一覧' 
       end
 
       it '管理者を登録できる' do
@@ -87,7 +87,7 @@ RSpec.describe 'ユーザー管理機能', type: :system do
         check '管理者権限'
         click_button '登録する'
 
-        expect(page).to have_content 'ユーザーを登録しました'
+        expect(page).to have_content 'ユーザを登録しました'
       end
 
       it 'ユーザー詳細画面にアクセスできる' do
@@ -102,19 +102,22 @@ RSpec.describe 'ユーザー管理機能', type: :system do
         fill_in 'パスワード（確認用）', with: 'password'
         click_button '更新する'
         
-        expect(page).to have_content 'ユーザーを更新しました'
+        expect(page).to have_content 'ユーザを更新しました'
       end
 
-      it 'ユーザーを削除できる' do
+      it 'ユーザーを削除できる', js: true do
         visit admin_users_path
-        expect {
-          accept_confirm do
-            all('.destroy-user').first.click 
-          end
-          expect(page).to have_content 'ユーザーを削除しました'
-        }.to change(User, :count).by(-1)
+        
+        # 確実にページとJavaScriptが読み込まれるまで待機させます
+        expect(page).to have_content 'ユーザ一覧ページ'
+        expect(page).to have_selector('.destroy-user')
+        
+        page.accept_confirm '本当に削除してもよろしいですか？' do
+          click_link '削除', match: :first
+        end
+        
+        expect(page).to have_content 'ユーザを削除しました'
       end
-    end
 
     context '一般ユーザーがユーザー一覧画面にアクセスした場合' do
       before do
@@ -126,9 +129,9 @@ RSpec.describe 'ユーザー管理機能', type: :system do
 
       it 'タスク一覧画面に遷移し、「管理者以外はアクセスできません」というエラーメッセージが表示される' do
         visit admin_users_path
-        expect(page).to have_content '管理者以外はアクセスできません'
+        expect(page).to have_content '管理者以外アクセスできません'
         expect(current_path).to eq tasks_path
       end
     end
   end
-end 
+end

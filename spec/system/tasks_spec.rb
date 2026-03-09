@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Task management function', type: :system do
-  # 全テスト用のユーザーを作成
   let!(:user) { FactoryBot.create(:user) }
 
   describe 'Registration function' do
@@ -18,8 +17,9 @@ RSpec.describe 'Task management function', type: :system do
         fill_in 'タイトル', with: 'My Test Task'
         fill_in '内容', with: 'This is a test content.'
         
-        # THE CHROME BYPASS: Adding 00 forces Chrome to accept the typing
-        fill_in '終了期限', with: '002026-12-31'
+        # 標準的な入力を行い、Tabキーで確実に入力を確定させます
+        fill_in '終了期限', with: '2026-12-31'
+        find_field('終了期限').send_keys(:tab)
         
         select '中', from: '優先度'
         select '未着手', from: 'ステータス'
@@ -64,15 +64,18 @@ RSpec.describe 'Task management function', type: :system do
         visit new_task_path
         fill_in 'タイトル', with: 'newly_created_task'
         fill_in '内容', with: 'new task content'
-        # ここもシンプルな文字列に戻します
-        fill_in '終了期限', with: '2026-12-31'
+        fill_in '終了期限', with: '002026-12-31'
         select '中', from: '優先度'
         select '未着手', from: 'ステータス'
+        
+        # FIX: Click the background to remove focus from the date field
+        find('body').click
+        sleep 1
+
         click_button '登録する'
 
         expect(page).to have_content 'タスクを登録しました'
         
-        # 登録後、タスク一覧画面に戻って確認する
         visit tasks_path 
         task_list = all('tbody tr')
         expect(task_list[0]).to have_content 'newly_created_task'
