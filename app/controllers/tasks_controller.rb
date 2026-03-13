@@ -1,37 +1,28 @@
 class TasksController < ApplicationController
-  before_action :set_task, only: [:show, :edit, :update, :destroy]
+  before_action :require_login
+  before_action :set_task, only: %i[ show edit update destroy ]
+  before_action :ensure_correct_user, only: %i[ show edit update destroy ]
 
   def index
-    # Start with all tasks
-    @tasks = Task.all
+    @tasks = current_user.tasks
 
-    # 1. Search Logic
     if params[:search].present?
-      if params[:search][:title].present? && params[:search][:status].present?
-        # Search by BOTH title and status
-        @tasks = @tasks.search_title(params[:search][:title]).search_status(params[:search][:status])
-      elsif params[:search][:title].present?
-        # Search ONLY by title
+      if params[:search][:title].present?
         @tasks = @tasks.search_title(params[:search][:title])
-      elsif params[:search][:status].present?
-        # Search ONLY by status
+      end
+      if params[:search][:status].present?
         @tasks = @tasks.search_status(params[:search][:status])
       end
     end
 
-    # 2. Sorting Logic
     if params[:sort_deadline_on]
-      # Apply deadline sorting if the link was clicked
       @tasks = @tasks.sort_deadline_on
     elsif params[:sort_priority]
-      # Apply priority sorting if the link was clicked
       @tasks = @tasks.sort_priority
     else
-      # Default: Sort by newest created (from Step 2)
       @tasks = @tasks.sort_created_at
     end
 
-    # 3. Pagination (This must happen last!)
     @tasks = @tasks.page(params[:page]).per(10)
   end
 
@@ -46,10 +37,10 @@ class TasksController < ApplicationController
   end
 
   def create
-    @task = Task.new(task_params)
+    @task = current_user.tasks.build(task_params)
+
     if @task.save
-      # UPDATE THIS LINE to use the translation helper
-      redirect_to tasks_path, notice: t('flash.tasks.create')
+      redirect_to @task, notice: 'タスクを登録しました'
     else
       render :new, status: :unprocessable_entity
     end
@@ -57,7 +48,7 @@ class TasksController < ApplicationController
 
   def update
     if @task.update(task_params)
-      redirect_to @task, notice: t('flash.tasks.update')
+      redirect_to @task, notice: 'タスクを更新しました'
     else
       render :edit, status: :unprocessable_entity
     end
@@ -65,13 +56,19 @@ class TasksController < ApplicationController
 
   def destroy
     @task.destroy
-    redirect_to tasks_url, notice: t('flash.tasks.destroy')
+    redirect_to tasks_url, notice: 'タスクを削除しました'
   end
 
   private
 
   def set_task
     @task = Task.find(params[:id])
+  end
+
+  def ensure_correct_user
+    unless @task.user_id == current_user.id
+      redirect_to tasks_path, notice: 'アクセス権限がありません'
+    end
   end
 
   def task_params
