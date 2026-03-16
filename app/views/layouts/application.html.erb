@@ -29,7 +29,7 @@
               <li class="nav-item"><%= link_to 'ラベル一覧', labels_path, class: "nav-link", id: "labels-index" %></li>
               <li class="nav-item"><%= link_to 'ラベルを登録する', new_label_path, class: "nav-link", id: "new-label" %></li>
               
-              <li class="nav-item"><%= link_to 'アカウント設定', user_path(current_user), class: "nav-link", id: "account-details" %></li>
+              <li class="nav-item"><%= link_to 'アカウント詳細', user_path(current_user), class: "nav-link", id: "account-details" %></li>
               <li class="nav-item"><%= link_to 'ログアウト', session_path(current_user.id), method: :delete, class: "nav-link", id: "logout" %></li>
             <% else %>
               <li class="nav-item"><%= link_to 'アカウント登録', new_user_path, class: "nav-link", id: "sign-up" %></li>

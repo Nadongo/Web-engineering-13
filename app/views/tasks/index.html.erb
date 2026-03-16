@@ -1,28 +1,23 @@
 <h1 class="mb-4"><%= t('tasks.index.title') %></h1>
 
-<%= form_with(scope: :search, url: tasks_path, method: :get, local: true, class: 'mb-5') do |form| %>
-  <div class="row">
-    <div class="col-md-3 form-group">
-      <%= form.label :status, Task.human_attribute_name(:status) %>
-      <%= form.select :status, Task.statuses.keys.map { |k| [t("activerecord.enums.task.status.#{k}"), k] }, { include_blank: true, selected: params.dig(:search, :status) }, class: 'form-control' %>
-    </div>
-    
-    <div class="col-md-4 form-group">
-      <%= form.label :title, Task.human_attribute_name(:title) %>
-      <%= form.text_field :title, value: params.dig(:search, :title), class: 'form-control' %>
-    </div>
-
-    <div class="col-md-3 form-group">
-      <%= form.label :label_id, 'Labels' %>
-      <%= form.select :label_id, current_user.labels.pluck(:name, :id), { include_blank: true, selected: params.dig(:search, :label_id) }, class: 'form-control' %>
-    </div>
+<%= form_with(scope: :search, url: tasks_path, method: :get, local: true, class: 'form-inline mb-4 p-3 bg-light border rounded') do |form| %>
+  
+  <div class="form-group mr-3">
+    <%= form.label :status, 'ステータス', class: 'mr-2 font-weight-bold' %>
+    <%= form.select :status, Task.statuses.keys.map { |k| [t("activerecord.enums.task.status.#{k}"), k] }, { include_blank: true, selected: params.dig(:search, :status) }, class: 'form-control' %>
   </div>
 
-  <div class="row">
-    <div class="col-md-10 text-right">
-      <%= form.submit "Search", id: 'search_task', class: 'btn btn-primary px-4' %>
-    </div>
+  <div class="form-group mr-3">
+    <%= form.label :title, 'タイトル', class: 'mr-2 font-weight-bold' %>
+    <%= form.text_field :title, value: params.dig(:search, :title), class: 'form-control' %>
   </div>
+
+  <div class="form-group mr-3">
+    <%= form.label :label_id, 'ラベル', class: 'mr-2 font-weight-bold' %>
+    <%= form.select :label_id, current_user.labels.pluck(:name, :id), { include_blank: true, selected: params.dig(:search, :label_id) }, class: 'form-control' %>
+  </div>
+
+  <%= form.submit "検索", id: 'search_task', class: 'btn btn-primary' %>
 <% end %>
 
 <table class="table border-bottom mb-4">
