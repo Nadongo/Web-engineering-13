@@ -1,14 +1,13 @@
 Rails.application.routes.draw do
+  get 'labels/index'
+  get 'labels/new'
+  get 'labels/edit'
   root 'tasks#index'
-  
-  resources :tasks
   resources :users, only: [:new, :create, :show, :edit, :update]
-  
-  # Login / Logout routes
   resources :sessions, only: [:new, :create, :destroy]
+  resources :tasks
   
-  # ADD THIS LINE: Failsafe to catch the GET request and log the user out
-  get '/sessions/:id', to: 'sessions#destroy'
+  resources :labels
   
   namespace :admin do
     resources :users

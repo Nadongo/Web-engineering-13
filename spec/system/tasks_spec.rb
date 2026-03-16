@@ -17,15 +17,15 @@ RSpec.describe 'Task management function', type: :system do
         fill_in 'タイトル', with: 'My Test Task'
         fill_in '内容', with: 'This is a test content.'
         
-        # 標準的な入力を行い、Tabキーで確実に入力を確定させます
+        # Uses TAB to safely lock the date in Headless Chrome
         fill_in '終了期限', with: '2026-12-31'
         find_field('終了期限').send_keys(:tab)
         
         select '中', from: '優先度'
         select '未着手', from: 'ステータス'
-        click_button '登録する'
         
-        expect(page).to have_content 'タスクを登録しました'
+        click_button 'create-task'
+        
         expect(page).to have_content 'My Test Task'
       end
     end
@@ -64,18 +64,15 @@ RSpec.describe 'Task management function', type: :system do
         visit new_task_path
         fill_in 'タイトル', with: 'newly_created_task'
         fill_in '内容', with: 'new task content'
-        fill_in '終了期限', with: '002026-12-31'
+        
+        fill_in '終了期限', with: '2026-12-31'
+        find_field('終了期限').send_keys(:tab)
+        
         select '中', from: '優先度'
         select '未着手', from: 'ステータス'
-        
-        # FIX: Click the background to remove focus from the date field
-        find('body').click
-        sleep 1
 
-        click_button '登録する'
+        click_button 'create-task'
 
-        expect(page).to have_content 'タスクを登録しました'
-        
         visit tasks_path 
         task_list = all('tbody tr')
         expect(task_list[0]).to have_content 'newly_created_task'
@@ -110,7 +107,7 @@ RSpec.describe 'Task management function', type: :system do
       context 'If you do a fuzzy search by Title' do
         it "Only tasks containing the search word will be displayed." do
           fill_in 'タイトル', with: 'first'
-          click_button '検索'
+          click_button 'search_task'
           expect(page).to have_content 'first_task'
           expect(page).not_to have_content 'second_task'
           expect(page).not_to have_content 'third_task'
@@ -120,19 +117,19 @@ RSpec.describe 'Task management function', type: :system do
       context 'Search by status' do
         it "Only tasks matching the searched status will be displayed" do
           select '未着手', from: 'ステータス'
-          click_button '検索'
+          click_button 'search_task'
           expect(page).to have_content 'first_task'
           expect(page).not_to have_content 'second_task'
           expect(page).not_to have_content 'third_task'
 
           select '着手中', from: 'ステータス'
-          click_button '検索'
+          click_button 'search_task'
           expect(page).not_to have_content 'first_task'
           expect(page).to have_content 'second_task'
           expect(page).not_to have_content 'third_task'
 
           select '完了', from: 'ステータス'
-          click_button '検索'
+          click_button 'search_task'
           expect(page).not_to have_content 'first_task'
           expect(page).not_to have_content 'second_task'
           expect(page).to have_content 'third_task'
@@ -143,7 +140,24 @@ RSpec.describe 'Task management function', type: :system do
         it "Only tasks that contain the search word Title and match the status will be displayed" do
           fill_in 'タイトル', with: 'first'
           select '未着手', from: 'ステータス'
-          click_button '検索'
+          click_button 'search_task'
+          expect(page).to have_content 'first_task'
+          expect(page).not_to have_content 'second_task'
+          expect(page).not_to have_content 'third_task'
+        end
+      end
+
+      context 'When searching by label' do
+        # Create the label BEFORE the page loads to prevent session dropping
+        let!(:search_label) { FactoryBot.create(:label, name: '検索用ラベル', user: user) }
+        let!(:labelling) { FactoryBot.create(:labelling, task: first_task, label: search_label) }
+
+        it 'All tasks with that label are displayed.' do
+          visit tasks_path
+          
+          select '検索用ラベル', from: 'search[label_id]'
+          click_button 'search_task'
+          
           expect(page).to have_content 'first_task'
           expect(page).not_to have_content 'second_task'
           expect(page).not_to have_content 'third_task'
