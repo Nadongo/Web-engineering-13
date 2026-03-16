@@ -1,5 +1,4 @@
 class TasksController < ApplicationController
-  # THESE FILTERS PREVENT THE NIL ERROR:
   before_action :require_login
   before_action :set_task, only: %i[ show edit update destroy ]
   before_action :ensure_correct_user, only: %i[ show edit update destroy ]
@@ -19,10 +18,10 @@ class TasksController < ApplicationController
     # 2. Search / Filtering Logic
     if params[:search].present?
       if params[:search][:title].present?
-        @tasks = @tasks.where('title LIKE ?', "%#{params[:search][:title]}%")
+        @tasks = @tasks.where('tasks.title LIKE ?', "%#{params[:search][:title]}%")
       end
       if params[:search][:status].present?
-        @tasks = @tasks.where(status: params[:search][:status])
+        @tasks = @tasks.where(tasks: { status: params[:search][:status] })
       end
       if params[:search][:label_id].present?
         @tasks = @tasks.joins(:labels).where(labels: { id: params[:search][:label_id] })
