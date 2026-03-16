@@ -11,6 +11,7 @@ ja:
     models:
       task: "タスク"
       user: "ユーザ"
+      label: "ラベル"
     attributes:
       task:
         title: "タイトル"
@@ -19,12 +20,13 @@ ja:
         deadline_on: "終了期限"
         priority: "優先度"
         status: "ステータス"
-      # ADDED USER ATTRIBUTES HERE
       user:
         name: "名前"
         email: "メールアドレス"
         password: "パスワード"
         password_confirmation: "パスワード（確認用）"
+      label:
+        name: "名前"
     enums:
       task:
         priority:
