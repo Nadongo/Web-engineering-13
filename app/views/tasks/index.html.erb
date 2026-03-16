@@ -14,11 +14,11 @@
 
   <div class="form-group mr-3">
     <%= form.label :label_id, 'ラベル', class: 'mr-2 font-weight-bold' %>
-    <%= form.select :label_id, current_user.labels.pluck(:name, :id), { include_blank: true, selected: params.dig(:search, :label_id) }, class: 'form-control', id: 'label_id' %>
+    <%= form.select :label_id, Label.pluck(:name, :id), { include_blank: true, selected: params.dig(:search, :label_id) }, class: 'form-control', id: 'search_label_id' %>
   </div>
 
   <%= form.submit "検索", id: 'search_task', class: 'btn btn-primary' %>
-<% end %>
+<% end %>>
 
 <table class="table border-bottom mb-4">
   <thead>
