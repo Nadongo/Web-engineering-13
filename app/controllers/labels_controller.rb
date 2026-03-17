@@ -1,5 +1,7 @@
 class LabelsController < ApplicationController
-  before_action :set_label, only: [:edit, :update, :destroy]
+  # Ensure the user is logged in
+  before_action :require_login
+  before_action :set_label, only: %i[edit update destroy]
 
   def index
     @labels = current_user.labels
@@ -9,16 +11,18 @@ class LabelsController < ApplicationController
     @label = Label.new
   end
 
+  def edit
+  end
+
   def create
+    # Crucial: This links the label to the current user!
     @label = current_user.labels.build(label_params)
+
     if @label.save
       redirect_to labels_path, notice: 'ラベルを登録しました'
     else
       render :new
     end
-  end
-
-  def edit
   end
 
   def update

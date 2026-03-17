@@ -4,7 +4,6 @@ RSpec.describe 'Label management function', type: :system do
   let(:user) { FactoryBot.create(:user) }
   
   before do
-    # Ensure the user is logged in before testing label features
     visit new_session_path
     fill_in 'メールアドレス', with: user.email
     fill_in 'パスワード', with: 'password'
@@ -15,7 +14,8 @@ RSpec.describe 'Label management function', type: :system do
     context 'When a label is registered' do
       it 'Registered labels are displayed.' do
         visit new_label_path
-        # Using the exact HTML ID requested in the requirements
+        
+        # Using the explicit IDs to bypass translation confusion
         fill_in 'labels', with: 'New Test Label'
         click_button 'register'
         
