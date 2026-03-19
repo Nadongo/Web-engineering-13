@@ -6,23 +6,29 @@ class TasksController < ApplicationController
   def index
     @tasks = current_user.tasks
 
+    # 1. Sorting Logic
+    if params[:sort_deadline_on]
+      @tasks = @tasks.order(deadline_on: :asc)
+    elsif params[:sort_priority]
+      @tasks = @tasks.order(priority: :desc)
+    else
+      @tasks = @tasks.order(created_at: :desc)
+    end
+
+    # 2. Search / Filtering Logic
     if params[:search].present?
       if params[:search][:title].present?
-        @tasks = @tasks.search_title(params[:search][:title])
+        @tasks = @tasks.where('tasks.title LIKE ?', "%#{params[:search][:title]}%")
       end
       if params[:search][:status].present?
-        @tasks = @tasks.search_status(params[:search][:status])
+        @tasks = @tasks.where(tasks: { status: params[:search][:status] })
+      end
+      if params[:search][:label_id].present?
+        @tasks = @tasks.joins(:labels).where(labels: { id: params[:search][:label_id] })
       end
     end
 
-    if params[:sort_deadline_on]
-      @tasks = @tasks.sort_deadline_on
-    elsif params[:sort_priority]
-      @tasks = @tasks.sort_priority
-    else
-      @tasks = @tasks.sort_created_at
-    end
-
+    # 3. Pagination
     @tasks = @tasks.page(params[:page]).per(10)
   end
 
@@ -38,40 +44,40 @@ class TasksController < ApplicationController
 
   def create
     @task = current_user.tasks.build(task_params)
-
     if @task.save
-      redirect_to @task, notice: 'タスクを登録しました'
+      redirect_to tasks_path, notice: "タスクを登録しました"
     else
-      render :new, status: :unprocessable_entity
+      render :new
     end
   end
 
   def update
     if @task.update(task_params)
-      redirect_to @task, notice: 'タスクを更新しました'
+      redirect_to tasks_path, notice: "タスクを更新しました"
     else
-      render :edit, status: :unprocessable_entity
+      render :edit
     end
   end
 
   def destroy
     @task.destroy
-    redirect_to tasks_url, notice: 'タスクを削除しました'
+    redirect_to tasks_path, notice: "タスクを削除しました"
   end
 
   private
 
   def set_task
-    @task = Task.find(params[:id])
-  end
-
-  def ensure_correct_user
-    unless @task.user_id == current_user.id
-      redirect_to tasks_path, notice: 'アクセス権限がありません'
-    end
+    @task = current_user.tasks.find(params[:id])
   end
 
   def task_params
-    params.require(:task).permit(:title, :content, :deadline_on, :priority, :status)
+    params.require(:task).permit(:title, :content, :deadline_on, :priority, :status, label_ids: [])
+  end
+
+  def ensure_correct_user
+    @task = Task.find(params[:id])
+    unless @task.user == current_user
+      redirect_to tasks_path, notice: "権限がありません"
+    end
   end
 end
